@@ -1,4 +1,5 @@
 {
+    "cookiecutter.project_slug": "ipvu-fr-k15",
     "connector_name": "orbit",
     "pipeline_stage": "intermediate",
     "pipeline_stage_abbr": "int_",
