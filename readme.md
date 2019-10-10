@@ -3,4 +3,5 @@
 
 ```cookiecutter https://github.com/sansagara/k15-connector-cookiecutter```
 
-Put your connector name and pipeline stage, for it to put the file on the correct place!
+Put your connector name and pipeline stage, and cookiecutter will create all needed folder structure.
+Now, just add it to your pipeline!
