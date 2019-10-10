@@ -1,5 +1,5 @@
 {
-    "src_folder_name": "src",
+    "_src_folder_name": "src",
     "connector_name": "orbit",
     "pipeline_stage": "intermediate",
     "pipeline_stage_abbr": "int_",
