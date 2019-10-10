@@ -4,5 +4,6 @@
     "pipeline_stage": "intermediate",
     "pipeline_stage_abbr": "int_",
     "raw_data_abbr": "raw_",
+    "ref_data_abbr": "ref_",
     "node_name": "accounts"
 }

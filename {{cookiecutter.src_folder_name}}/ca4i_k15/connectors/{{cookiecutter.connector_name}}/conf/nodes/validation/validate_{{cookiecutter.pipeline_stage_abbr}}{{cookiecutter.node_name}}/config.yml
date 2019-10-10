@@ -1,0 +1,5 @@
+function: connectors.{{cookiecutter.connector_name}}.src.validation.validate_{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.validate_{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
+inputs:
+  - {{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}
+  - {{cookiecutter.ref_data_abbr}}{{cookiecutter.node_name}}
+name: validate_{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
