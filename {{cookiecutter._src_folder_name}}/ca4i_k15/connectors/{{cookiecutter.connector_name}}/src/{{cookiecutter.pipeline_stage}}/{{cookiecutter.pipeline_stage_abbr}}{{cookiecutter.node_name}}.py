@@ -13,4 +13,4 @@ def {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}({{cookiecutte
 
     """
 
-    pass
+    return {{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}
