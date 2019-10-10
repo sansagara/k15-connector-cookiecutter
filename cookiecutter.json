@@ -3,5 +3,6 @@
     "connector_name": "orbit",
     "pipeline_stage": "intermediate",
     "pipeline_stage_abbr": "int_",
+    "raw_data_abbr": "raw_",
     "node_name": "accounts"
 }
