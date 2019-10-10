@@ -1,5 +1,0 @@
-function: connectors.{{connector_name}}.src.{{pipeline_stage}}.{{pipeline_stage_abbr}}{{node_name}}.{{pipeline_stage_abbr}}{{node_name}}
-inputs:
-  - {{raw_data_abbr}}{{node_name}}
-outputs: {{pipeline_stage_abbr}}{{node_name}}
-name: {{pipeline_stage_abbr}}{{node_name}}

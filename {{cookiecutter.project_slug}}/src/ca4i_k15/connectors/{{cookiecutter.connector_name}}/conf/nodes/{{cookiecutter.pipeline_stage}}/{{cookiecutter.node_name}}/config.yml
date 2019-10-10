@@ -1,0 +1,5 @@
+function: connectors.{{cookiecutter.connector_name}}.src.{{cookiecutter.pipeline_stage}}.{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
+inputs:
+  - {{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}
+outputs: {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
+name: {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
