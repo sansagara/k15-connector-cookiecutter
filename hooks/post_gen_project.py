@@ -9,15 +9,14 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
     import shutil
 
     # get pipeline directory
-    package_dir = '{{cookiecutter._template}}'
-    pipeline_file = os.path.join(package_dir, "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
+    pipeline_file = os.path.join(os.getcwd(), "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
                                  "{{cookiecutter.connector_name}}", "conf", "pipelines", "pipeline.yml")
 
     # backup pipeline.yml
     if os.path.isfile(pipeline_file):
         import datetime
         dt = datetime.datetime.utcnow().isoformat()
-        pipeline_bu = os.path.join(package_dir, "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
+        pipeline_bu = os.path.join(os.getcwd(), "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
                                    "{{cookiecutter.connector_name}}", "conf", "pipelines", "bu",
                                    dt, "pipeline.yml")
 
