@@ -67,18 +67,20 @@ def parse_pipeline_file(pipeline_file):
                 print("Could not parse yml on pipeline.yml")
                 return
 
-            for pipeline in pipelines:
-                probable_pipeline_name = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
-                probable_node_name = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
-                print("pipeline:" + str(pipeline))
-                if not pipeline[probable_pipeline_name]:
-                    print("Created pipeline {} on pipeline.yml".format(probable_pipeline_name))
-                    pipeline[probable_pipeline_name] = []
-                if not pipeline[probable_pipeline_name]["nodes"][probable_node_name]:
-                    print("Created node {} on pipeline {} on pipeline.yml".format(probable_node_name,
-                                                                                  probable_pipeline_name))
-                    pipeline[probable_pipeline_name]["nodes"] = pipeline[probable_pipeline_name][
-                        "nodes"].append(probable_node_name)
+            connector_stage = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
+            connector_validate = "{{cookiecutter.connector_name}}" + "_validation"
+            connector_stage_node = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+            connector_validate_node = "validation/validate_" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+
+            if not pipelines[connector_stage]:
+                print("Could not find the expected pipeline on pipelines.yml for stage {}",format(connector_stage))
+            pipelines[connector_stage] = connector_stage_node
+            print("Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+
+            if not pipelines[connector_validate]:
+                print("Could not find the expected pipeline on pipelines.yml for stage {}",format(connector_validate))
+            pipelines[connector_validate] = connector_validate_node
+            print("Created node {} for pipeline {} on pipeline.yml".format(connector_validate_node, connector_validate))
 
             with open(pipeline_file, "w") as f:
                 yaml.dump(pipelines, f)
