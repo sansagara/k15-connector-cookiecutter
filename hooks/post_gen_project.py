@@ -8,9 +8,9 @@ cookiecutter_context = {{cookiecutter}}
 
 
 def build_initial_pipeline_config():
-    initial_pipelines = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": "{'nodes':[]}}",
-                         "{{cookiecutter.connector_name}}_validation": "{'nodes':[]}}",
-                         "{{cookiecutter.connector_name}}": "{'pipelines':[]}"
+    initial_pipelines = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
+                         "{{cookiecutter.connector_name}}_validation": {"nodes": []},
+                         "{{cookiecutter.connector_name}}": {"pipelines": []}
                          }
     return initial_pipelines
 
@@ -18,7 +18,7 @@ def build_initial_pipeline_config():
 def should_create_additional_nodes(context):
     if not read_user_yes_no("Want to create an additional node?", default_value='no'):
         print("All nodes added now!")
-        return
+        exit(0)
 
     new_node_name = read_user_variable("node_name", None)
     if not new_node_name:
@@ -61,26 +61,32 @@ def parse_pipeline_file(pipeline_file):
     with open(pipeline_file, 'r') as stream:
         try:
             pipelines = yaml.safe_load(stream)
-            print("Parsed pipelines from pipeline.yml:" + str(pipelines))
+            print(" - Parsed pipelines from pipeline.yml!")
 
             if not pipelines:
-                print("Could not parse yml on pipeline.yml")
+                print("Error: Could not parse yml on pipeline.yml. Skipping creation.")
                 return
 
+            connector = "{{cookiecutter.connector_name}}"
             connector_stage = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
             connector_validate = "{{cookiecutter.connector_name}}" + "_validation"
             connector_stage_node = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
             connector_validate_node = "validation/validate_" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
 
+            if not pipelines[connector]:
+                print("Could not find the expected pipeline on pipelines.yml for connector {}", format(connector))
+            pipelines[connector] = [connector_stage, connector_validate]
+            print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+
             if not pipelines[connector_stage]:
-                print("Could not find the expected pipeline on pipelines.yml for stage {}",format(connector_stage))
-            pipelines[connector_stage] = connector_stage_node
-            print("Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+                print("Could not find the expected pipeline on pipelines.yml for stage {}", format(connector_stage))
+            pipelines[connector_stage] = pipelines[connector_stage].append(connector_stage_node)
+            print(" - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
 
             if not pipelines[connector_validate]:
-                print("Could not find the expected pipeline on pipelines.yml for stage {}",format(connector_validate))
-            pipelines[connector_validate] = connector_validate_node
-            print("Created node {} for pipeline {} on pipeline.yml".format(connector_validate_node, connector_validate))
+                print("Could not find the expected validate pipeline on pipelines.yml for stage {}", format(connector_validate))
+            pipelines[connector_validate] = pipelines[connector_validate].append(connector_validate_node)
+            print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node, connector_validate))
 
             with open(pipeline_file, "w") as f:
                 yaml.dump(pipelines, f)
