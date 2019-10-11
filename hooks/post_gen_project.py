@@ -17,7 +17,8 @@ if add_more_nodes:
             'k15-connector-cookiecutter',
             extra_context=new_context,
             no_input=True,
-            output_dir='../'
+            output_dir='../',
+            overwrite_if_exists=True
         )
 
     print("Context:")
