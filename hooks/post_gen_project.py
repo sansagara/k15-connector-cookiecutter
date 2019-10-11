@@ -23,7 +23,6 @@ def should_create_additional_nodes(context):
     if not new_node_name:
         print("Skipping new node creation!")
     else:
-        print("Creating node: " + new_node_name)
         new_context = context = context.copy()
         new_context["node_name"] = new_node_name
         cookiecutter(
@@ -83,6 +82,7 @@ def parse_pipeline_file(pipeline_file):
             else:
                 nodes = pipelines[connector_stage]["nodes"]
                 if nodes:
+                    print("pipeline already has nodes: " + str(nodes))
                     pipelines[connector_stage]["nodes"] = list(nodes).append(connector_stage_node)
                 else:
                     pipelines[connector_stage]["nodes"] = [connector_stage_node]
@@ -93,6 +93,7 @@ def parse_pipeline_file(pipeline_file):
             else:
                 nodes = pipelines[connector_validate]["nodes"]
                 if nodes:
+                    print("pipeline already has nodes: " + str(nodes))
                     pipelines[connector_validate]["nodes"] = list(nodes).append(connector_validate_node)
                 else:
                     pipelines[connector_validate]["nodes"] = [connector_validate_node]
