@@ -32,21 +32,21 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
     with open(pipeline_file, 'r') as stream:
         try:
             pipelines = yaml.safe_load(stream)
-            print("Parsed pipelines from pipeline.yml:")
-            print(pipelines)
+            print("Parsed pipelines from pipeline.yml:" + pipelines)
 
-            for pipeline in pipelines:
-                probable_pipeline_name = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
-                probable_node_name = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
-                if not pipeline[probable_pipeline_name]:
-                    print("Created pipeline {} on pipeline.yml".format(probable_pipeline_name))
-                    pipeline[probable_pipeline_name] = []
-                if not pipeline[probable_pipeline_name][probable_node_name]:
-                    print("Created node {} on pipeline {} on pipeline.yml".format(probable_node_name, probable_pipeline_name))
-                    pipeline[probable_pipeline_name] = []
+            if pipelines:
+                for pipeline in pipelines:
+                    probable_pipeline_name = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
+                    probable_node_name = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+                    if not pipeline[probable_pipeline_name]:
+                        print("Created pipeline {} on pipeline.yml".format(probable_pipeline_name))
+                        pipeline[probable_pipeline_name] = []
+                    if not pipeline[probable_pipeline_name]["nodes"][probable_node_name]:
+                        print("Created node {} on pipeline {} on pipeline.yml".format(probable_node_name, probable_pipeline_name))
+                        pipeline[probable_pipeline_name]["nodes"] = pipeline[probable_pipeline_name]["nodes"].append(probable_node_name)
 
-            with open(pipeline_file, "w") as f:
-                yaml.dump(pipelines, f)
+                with open(pipeline_file, "w") as f:
+                    yaml.dump(pipelines, f)
 
         except yaml.YAMLError as exc:
             print(exc)
