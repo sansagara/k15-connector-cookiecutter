@@ -70,6 +70,7 @@ def parse_pipeline_file(pipeline_file):
             for pipeline in pipelines:
                 probable_pipeline_name = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
                 probable_node_name = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+                print("pipeline:" + str(pipeline))
                 if not pipeline[probable_pipeline_name]:
                     print("Created pipeline {} on pipeline.yml".format(probable_pipeline_name))
                     pipeline[probable_pipeline_name] = []
