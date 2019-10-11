@@ -1,4 +1,3 @@
-# First get cookiecutter context dictionary:
 from cookiecutter.main import cookiecutter
 from cookiecutter.prompt import read_user_yes_no, read_user_variable
 import os
