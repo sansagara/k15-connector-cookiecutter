@@ -26,15 +26,15 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
 
     # get pipeline directory
     package_dir = '{{cookiecutter._template}}'
-    pipeline_file = os.path.join(package_dir, {{cookiecutter._src_folder_name}}, "ca4i_k15", "connectors",
-                                 {{cookiecutter.connector_name}}, "conf", "pipelines", "pipeline.yml")
+    pipeline_file = os.path.join(package_dir, "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
+                                 "{{cookiecutter.connector_name}}", "conf", "pipelines", "pipeline.yml")
 
     # backup pipeline.yml
     if os.path.isfile(pipeline_file):
         import datetime
         dt = datetime.datetime.utcnow().isoformat()
-        pipeline_bu = os.path.join(package_dir, {{cookiecutter._src_folder_name}}, "ca4i_k15", "connectors",
-                                   {{cookiecutter.connector_name}}, "conf", "pipelines", "bu",
+        pipeline_bu = os.path.join(package_dir, "{{cookiecutter._src_folder_name}}", "ca4i_k15", "connectors",
+                                   "{{cookiecutter.connector_name}}", "conf", "pipelines", "bu",
                                    dt, "pipeline.yml")
 
         shutil.copy(pipeline_file, pipeline_bu)
@@ -51,8 +51,8 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
             print(pipelines)
 
             for pipeline in pipelines:
-                probable_pipeline_name = {{cookiecutter.connector_name}} + "_" + {{cookiecutter.pipeline_stage}}
-                probable_node_name = {{cookiecutter.pipeline_stage}} + "/" + {{cookiecutter.pipeline_stage_abbr}} + {{cookiecutter.node_name}}
+                probable_pipeline_name = "{{cookiecutter.connector_name}}" + "_" + "{{cookiecutter.pipeline_stage}}"
+                probable_node_name = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
                 if not pipeline[probable_pipeline_name]:
                     print("Created pipeline {} on pipeline.yml".format(probable_pipeline_name))
                     pipeline[probable_pipeline_name] = []
