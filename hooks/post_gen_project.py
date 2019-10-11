@@ -31,9 +31,11 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
 
     # backup pipeline.yml
     if os.path.isfile(pipeline_file):
+        import datetime
+        dt = datetime.datetime.utcnow().isoformat()
         pipeline_bu = os.path.join(package_dir, {{cookiecutter._src_folder_name}}, "ca4i_k15", "connectors",
                                    {{cookiecutter.connector_name}}, "conf", "pipelines", "bu",
-                                   {{cookiecutter.timestamp}}, "pipeline.yml")
+                                   dt, "pipeline.yml")
 
         shutil.copy(pipeline_file, pipeline_bu)
     else:
