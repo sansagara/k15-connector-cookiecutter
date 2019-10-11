@@ -22,8 +22,8 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
 
         shutil.copy(pipeline_file, pipeline_bu)
     else:
-        with open(pipeline_file, 'a'):
-            os.utime(pipeline_file, None)
+        print("No pipeline.yml found. Creating a new one!")
+        os.mknod(pipeline_file)
 
     # Parse pipeline.yml
     import yaml
