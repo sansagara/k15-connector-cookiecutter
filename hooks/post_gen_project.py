@@ -83,7 +83,7 @@ def parse_pipeline_file(pipeline_file):
                 nodes = pipelines[connector_stage]["nodes"]
                 if nodes:
                     print("pipeline already has nodes: " + str(nodes))
-                    pipelines[connector_stage]["nodes"] = nodes.append(connector_stage_node)
+                    pipelines[connector_stage]["nodes"].append(connector_stage_node)
                 else:
                     pipelines[connector_stage]["nodes"] = [connector_stage_node]
                 print(" - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
@@ -94,7 +94,7 @@ def parse_pipeline_file(pipeline_file):
                 nodes = pipelines[connector_validate]["nodes"]
                 if nodes:
                     print("pipeline already has nodes: " + str(nodes))
-                    pipelines[connector_validate]["nodes"] = nodes.append(connector_validate_node)
+                    pipelines[connector_validate]["nodes"].append(connector_validate_node)
                 else:
                     pipelines[connector_validate]["nodes"] = [connector_validate_node]
                 print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node, connector_validate))
