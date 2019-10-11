@@ -19,7 +19,7 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
         pipeline_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
                                    "{{cookiecutter.connector_name}}", "conf", "pipelines", "bu",
                                    dt, "pipeline.yml")
-
+        os.makedirs(pipeline_bu)
         shutil.copy(pipeline_file, pipeline_bu)
     else:
         print("No pipeline.yml found. Creating a new one!")
