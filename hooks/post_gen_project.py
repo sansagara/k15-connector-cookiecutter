@@ -8,15 +8,10 @@ cookiecutter_context = {{cookiecutter}}
 
 
 def build_initial_pipeline_config():
-    initial_pipelines = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": "nodes",
-                         "{{cookiecutter.connector_name}}_validation": "nodes"}
-
-    initial_pipelines["{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}"]["nodes"] = []
-    initial_pipelines["{{cookiecutter.connector_name}}_validation"]["nodes"] = []
-    initial_pipelines["{{cookiecutter.connector_name}}"]["pipelines"] = [
-        "{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}",
-        "{{cookiecutter.connector_name}}_validation"
-    ]
+    initial_pipelines = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": "{'nodes':[]}}",
+                         "{{cookiecutter.connector_name}}_validation": "{'nodes':[]}}",
+                         "{{cookiecutter.connector_name}}": "{'pipelines':[]}"
+                         }
     return initial_pipelines
 
 
