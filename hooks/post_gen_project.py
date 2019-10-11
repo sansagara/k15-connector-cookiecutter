@@ -4,22 +4,6 @@ from cookiecutter.prompt import read_user_yes_no, read_user_variable
 
 context = {{cookiecutter}}
 
-if read_user_yes_no("Want to create an additional node?", default_value='no'):
-    new_node_name = read_user_variable("node_name", None)
-    if not new_node_name:
-        print("Skipping new node creation!")
-    else:
-        print("Creating new node!")
-        new_context = context = context.copy()
-        new_context["node_name"] = new_node_name
-        cookiecutter(
-            'k15-connector-cookiecutter',
-            extra_context=new_context,
-            no_input=True,
-            output_dir='../',
-            overwrite_if_exists=True
-        )
-
 if read_user_yes_no("Should i try to append the new node to pipeline.yml?", default_value='no'):
     import os
     import shutil
@@ -65,5 +49,22 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
 
         except yaml.YAMLError as exc:
             print(exc)
+
+
+if read_user_yes_no("Want to create an additional node?", default_value='no'):
+    new_node_name = read_user_variable("node_name", None)
+    if not new_node_name:
+        print("Skipping new node creation!")
+    else:
+        print("Creating new node!")
+        new_context = context = context.copy()
+        new_context["node_name"] = new_node_name
+        cookiecutter(
+            'k15-connector-cookiecutter',
+            extra_context=new_context,
+            no_input=True,
+            output_dir='../',
+            overwrite_if_exists=True
+        )
 
 print("All done!")
