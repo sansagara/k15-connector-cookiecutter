@@ -32,7 +32,7 @@ if read_user_yes_no("Should i try to append the new node to pipeline.yml?", defa
     with open(pipeline_file, 'r') as stream:
         try:
             pipelines = yaml.safe_load(stream)
-            print("Parsed pipelines from pipeline.yml:" + pipelines)
+            print("Parsed pipelines from pipeline.yml:" + str(pipelines))
 
             if pipelines:
                 for pipeline in pipelines:
