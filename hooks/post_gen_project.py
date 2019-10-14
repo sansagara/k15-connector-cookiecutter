@@ -2,29 +2,20 @@ from cookiecutter.main import cookiecutter
 from cookiecutter.prompt import read_user_yes_no, read_user_variable
 import os
 import yaml
+import datetime
 
-cookiecutter_context = {{cookiecutter}}
+CC_CONTEXT = {{cookiecutter}}
+DT = datetime.datetime.utcnow().isoformat()
+INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
+                     "{{cookiecutter.connector_name}}_validation": {"nodes": []},
+                     "{{cookiecutter.connector_name}}": {"pipelines": []}
+                     }
 
-
-def build_initial_pipeline_config():
-    initial_pipelines = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
-                         "{{cookiecutter.connector_name}}_validation": {"nodes": []},
-                         "{{cookiecutter.connector_name}}": {"pipelines": []}
-                         }
-    return initial_pipelines
-
-
-def build_initial_catalog_config():
-    initial_pipelines = {"{{cookiecutter.raw_data_abbr}}_{{cookiecutter.node_name}}": {"type": "",
-                                                                                       "file_format":"",
-                                                                                       "file_path": "",
-                                                                                       "load_args": ""},
-                         "{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "",
-                                                                                       "file_format":"",
-                                                                                       "file_path": "",
-                                                                                       "save_args": ""}
-                         }
-    return initial_pipelines
+INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}_{{cookiecutter.node_name}}": {"type": "", "file_format": "",
+                                                                                 "file_path": "", "load_args": ""},
+                   "{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "", "file_format": "",
+                                                                                       "file_path": "", "save_args": ""}
+                   }
 
 
 def should_create_additional_nodes(context):
@@ -47,46 +38,20 @@ def should_create_additional_nodes(context):
         )
 
 
-def create_or_copy_pipeline_file(pipeline_file):
+def create_or_copy_yml_file(file, backup_file, initial_yml, name):
     import shutil
 
-    # backup pipeline.yml
-    if os.path.isfile(pipeline_file):
-        import datetime
-        dt = datetime.datetime.utcnow().isoformat()
-        pipeline_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
-                                   "{{cookiecutter.connector_name}}", "conf", "pipelines", "bu",
-                                   dt, "pipeline.yml")
-        os.makedirs(pipeline_bu)
-        shutil.copy(pipeline_file, pipeline_bu)
+    # make a backup!
+    if os.path.isfile(file):
+        os.makedirs(backup_file)
+        shutil.copy(file, backup_file)
     else:
-        print("No pipeline.yml found. Creating a new one!")
-        if not os.path.exists(os.path.dirname(pipeline_file)):
-            os.makedirs(os.path.dirname(pipeline_file))
-        os.mknod(pipeline_file)
-        with open(pipeline_file, "w") as f:
-            yaml.dump(build_initial_pipeline_config(), f)
-
-
-def create_or_copy_catalog_file(catalog_file):
-    import shutil
-
-    # backup pipeline.yml
-    if os.path.isfile(catalog_file):
-        import datetime
-        dt = datetime.datetime.utcnow().isoformat()
-        catalog_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
-                                  "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
-                                  dt, "pipeline.yml")
-        os.makedirs(catalog_bu)
-        shutil.copy(catalog_file, catalog_bu)
-    else:
-        print("No pipeline.yml found. Creating a new one!")
-        if not os.path.exists(os.path.dirname(catalog_file)):
-            os.makedirs(os.path.dirname(catalog_file))
-        os.mknod(catalog_file)
-        with open(catalog_file, "w") as f:
-            yaml.dump(build_initial_catalog_config(), f)
+        print("No {} found. Creating a new one!".format(name))
+        if not os.path.exists(os.path.dirname(file)):
+            os.makedirs(os.path.dirname(file))
+        os.mknod(file)
+        with open(file, "w") as f:
+            yaml.dump(initial_yml, f)
 
 
 def parse_pipeline_file(pipeline_file):
@@ -152,7 +117,10 @@ def should_add_to_pipeline():
 
     pipeline_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
                                       "{{cookiecutter.connector_name}}", "conf", "pipelines", "pipeline.yml")
-    create_or_copy_pipeline_file(pipeline_file_path)
+    pipeline_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                               "{{cookiecutter.connector_name}}", "conf", "pipelines", "bu",
+                               DT, "pipeline.yml")
+    create_or_copy_yml_file(pipeline_file_path, pipeline_bu, INITIAL_PIPELINES, "pipeline.yml")
     parse_pipeline_file(pipeline_file_path)
 
 
@@ -164,9 +132,13 @@ def should_add_to_catalog():
     catalog_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
                                      "{{cookiecutter.connector_name}}", "conf", "catalogs",
                                      "catalog_{{cookiecutter.connector_name}}.yml")
-    create_or_copy_catalog_file(catalog_file_path)
+    catalog_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                              "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
+                              DT, "pipeline.yml")
+    create_or_copy_yml_file(catalog_file_path, catalog_bu, INITIAL_CATALOG,
+                            "catalog_{{cookiecutter.connector_name}}.yml")
 
 
 should_add_to_pipeline()
 should_add_to_catalog()
-should_create_additional_nodes(cookiecutter_context)
+should_create_additional_nodes(CC_CONTEXT)
