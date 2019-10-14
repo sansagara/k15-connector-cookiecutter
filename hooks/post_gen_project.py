@@ -55,6 +55,27 @@ def create_or_copy_pipeline_file(pipeline_file):
             yaml.dump(build_initial_pipeline_config(), f)
 
 
+def create_or_copy_catalog_file(catalog_file):
+    import shutil
+
+    # backup pipeline.yml
+    if os.path.isfile(catalog_file):
+        import datetime
+        dt = datetime.datetime.utcnow().isoformat()
+        catalog_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                  "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
+                                  dt, "pipeline.yml")
+        os.makedirs(catalog_bu)
+        shutil.copy(catalog_file, catalog_bu)
+    else:
+        print("No pipeline.yml found. Creating a new one!")
+        if not os.path.exists(os.path.dirname(catalog_file)):
+            os.makedirs(os.path.dirname(catalog_file))
+        os.mknod(catalog_file)
+        with open(catalog_file, "w") as f:
+            yaml.dump(build_initial_pipeline_config(), f)
+
+
 def parse_pipeline_file(pipeline_file):
     with open(pipeline_file, 'r') as stream:
         try:
@@ -75,7 +96,8 @@ def parse_pipeline_file(pipeline_file):
                 print("Could not find the expected pipeline on pipelines.yml for connector {}".format(connector))
             else:
                 pipelines[connector]["pipelines"] = [connector_stage, connector_validate]
-                print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+                print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node,
+                                                                                             connector_stage))
 
             if not pipelines[connector_stage]:
                 print("Could not find the expected pipeline on pipelines.yml for stage {}".format(connector_stage))
@@ -86,10 +108,12 @@ def parse_pipeline_file(pipeline_file):
                     pipelines[connector_stage]["nodes"].append(connector_stage_node)
                 else:
                     pipelines[connector_stage]["nodes"] = [connector_stage_node]
-                print(" - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+                print(
+                    " - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
 
             if not pipelines[connector_validate]:
-                print("Could not find the expected validate pipeline on pipelines.yml for stage {}".format(connector_validate))
+                print("Could not find the expected validate pipeline on pipelines.yml for stage {}".format(
+                    connector_validate))
             else:
                 nodes = pipelines[connector_validate]["nodes"]
                 if nodes:
@@ -97,7 +121,8 @@ def parse_pipeline_file(pipeline_file):
                     pipelines[connector_validate]["nodes"].append(connector_validate_node)
                 else:
                     pipelines[connector_validate]["nodes"] = [connector_validate_node]
-                print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node, connector_validate))
+                print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node,
+                                                                                             connector_validate))
 
             with open(pipeline_file, "w") as f:
                 yaml.dump(pipelines, f)
@@ -108,7 +133,7 @@ def parse_pipeline_file(pipeline_file):
 
 
 def should_add_to_pipeline():
-    if not read_user_yes_no("Should i try to append the new node to pipeline.yml?", default_value='no'):
+    if not read_user_yes_no("Should i try to append the new node to pipeline.yml?", default_value='yes'):
         print("Skipping node addition to pipeline.yml")
         return
 
@@ -118,5 +143,17 @@ def should_add_to_pipeline():
     parse_pipeline_file(pipeline_file_path)
 
 
+def should_add_to_catalog():
+    if not read_user_yes_no("Should i try to append the new node to catalog_connector.yml?", default_value='yes'):
+        print("Skipping node addition to catalog_connector.yml")
+        return
+
+    catalog_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                     "{{cookiecutter.connector_name}}", "conf", "catalogs",
+                                     "catalog_{{cookiecutter.connector_name}}.yml")
+    create_or_copy_catalog_file(catalog_file_path)
+
+
 should_add_to_pipeline()
+should_add_to_catalog()
 should_create_additional_nodes(cookiecutter_context)
