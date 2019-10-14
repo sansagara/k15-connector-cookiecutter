@@ -14,6 +14,19 @@ def build_initial_pipeline_config():
     return initial_pipelines
 
 
+def build_initial_catalog_config():
+    initial_pipelines = {"{{cookiecutter.raw_data_abbr}}_{{cookiecutter.node_name}}": {"type": "",
+                                                                                       "file_format":"",
+                                                                                       "file_path": "",
+                                                                                       "load_args": ""},
+                         "{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "",
+                                                                                       "file_format":"",
+                                                                                       "file_path": "",
+                                                                                       "save_args": ""}
+                         }
+    return initial_pipelines
+
+
 def should_create_additional_nodes(context):
     if not read_user_yes_no("Want to create an additional node?", default_value='no'):
         print("All nodes added now!")
@@ -73,7 +86,7 @@ def create_or_copy_catalog_file(catalog_file):
             os.makedirs(os.path.dirname(catalog_file))
         os.mknod(catalog_file)
         with open(catalog_file, "w") as f:
-            yaml.dump(build_initial_pipeline_config(), f)
+            yaml.dump(build_initial_catalog_config(), f)
 
 
 def parse_pipeline_file(pipeline_file):
