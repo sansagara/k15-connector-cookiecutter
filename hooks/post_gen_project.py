@@ -16,6 +16,12 @@ INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}_{{cookiecutter.node_name}}": 
                    "{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "", "file_format": "",
                                                                                        "file_path": "", "save_args": ""}
                    }
+INITIAL_CATALOG_REF = {
+    "{{cookiecutter.ref_data_abbr}}_{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "",
+                                                                                                       "file_format": "",
+                                                                                                       "file_path": "",
+                                                                                                       "save_args": ""}
+    }
 
 
 def should_create_additional_nodes(context):
@@ -134,9 +140,18 @@ def should_add_to_catalog():
                                      "catalog_{{cookiecutter.connector_name}}.yml")
     catalog_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
                               "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
-                              DT, "pipeline.yml")
+                              DT, "catalog_{{cookiecutter.connector_name}}.yml")
+    catalog_ref_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                         "{{cookiecutter.connector_name}}", "conf", "catalogs",
+                                         "catalog_{{cookiecutter.connector_name}}_ref.yml")
+    catalog_ref_bu = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                  "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
+                                  DT, "catalog_{{cookiecutter.connector_name}}_ref.yml")
+
     create_or_copy_yml_file(catalog_file_path, catalog_bu, INITIAL_CATALOG,
                             "catalog_{{cookiecutter.connector_name}}.yml")
+    create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, INITIAL_CATALOG_REF,
+                            "catalog_{{cookiecutter.connector_name}}_ref.yml")
 
 
 should_add_to_pipeline()
