@@ -10,16 +10,23 @@ FILE_PATH = "s3a://$s3_bucket/$project_directory/"
 USR_PATH = "$s3_user/"
 RAW_PATH = "$s3_user_raw/"
 REF_PATH = "$s3_user_ref/"
+TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
                      "{{cookiecutter.connector_name}}_validation": {"nodes": []},
                      "{{cookiecutter.connector_name}}": {"pipelines": []}
                      }
 
-INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": {"type": "", "file_format": "csv",
+INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": {"type": TYPE,
+                                                                                "file_format": "csv",
                                                                                 "file_path": FILE_PATH + RAW_PATH,
-                                                                                "load_args": []},
-                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {"file_format": "parquet",
+                                                                                "load_args": [
+                                                                                    {"sep": "'|'"},
+                                                                                    {"header": True},
+                                                                                    {"inferSchema": True}
+                                                                                ]},
+                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {"type": TYPE,
+                                                                                      "file_format": "parquet",
                                                                                       "file_path": FILE_PATH + USR_PATH,
                                                                                       "save_args": [
                                                                                           {"mode": "overwrite"}]
@@ -31,7 +38,7 @@ INITIAL_CATALOG_REF = {
         "file_path": FILE_PATH + REF_PATH,
         "save_args": [
             {"mode": "overwrite"}]
-        }
+    }
 }
 
 
