@@ -6,22 +6,33 @@ import datetime
 
 CC_CONTEXT = {{cookiecutter}}
 DT = datetime.datetime.utcnow().isoformat()
+FILE_PATH = "s3a://$s3_bucket/$project_directory/"
+USR_PATH = "$s3_user/"
+RAW_PATH = "$s3_user_raw/"
+REF_PATH = "$s3_user_ref/"
+
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
                      "{{cookiecutter.connector_name}}_validation": {"nodes": []},
                      "{{cookiecutter.connector_name}}": {"pipelines": []}
                      }
 
-INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}_{{cookiecutter.node_name}}": {"type": "", "file_format": "",
-                                                                                 "file_path": "", "load_args": ""},
-                   "{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "", "file_format": "",
-                                                                                       "file_path": "", "save_args": ""}
+INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": {"type": "", "file_format": "csv",
+                                                                                "file_path": FILE_PATH + RAW_PATH,
+                                                                                "load_args": []},
+                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {"file_format": "parquet",
+                                                                                      "file_path": FILE_PATH + USR_PATH,
+                                                                                      "save_args": [
+                                                                                          {"mode": "overwrite"}]
+                                                                                      }
                    }
 INITIAL_CATALOG_REF = {
-    "{{cookiecutter.ref_data_abbr}}_{{cookiecutter.pipeline_stage_abbr}}_{{cookiecutter.node_name}}": {"type": "",
-                                                                                                       "file_format": "",
-                                                                                                       "file_path": "",
-                                                                                                       "save_args": ""}
-    }
+    "{{cookiecutter.ref_data_abbr}}{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {
+        "file_format": "parquet",
+        "file_path": FILE_PATH + REF_PATH,
+        "save_args": [
+            {"mode": "overwrite"}]
+        }
+}
 
 
 def should_create_additional_nodes(context):
