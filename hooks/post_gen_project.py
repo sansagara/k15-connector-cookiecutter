@@ -17,29 +17,32 @@ INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_st
                      "{{cookiecutter.connector_name}}": {"pipelines": []}
                      }
 
-INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": {"type": TYPE,
-                                                                                "file_format": "csv",
-                                                                                "file_path": FILE_PATH + RAW_PATH,
-                                                                                "load_args": [
-                                                                                    {"sep": "|"},
-                                                                                    {"header": True},
-                                                                                    {"inferSchema": True}
-                                                                                ]},
-                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {"type": TYPE,
-                                                                                      "file_format": "parquet",
-                                                                                      "file_path": FILE_PATH + USR_PATH,
-                                                                                      "save_args": [
-                                                                                          {"mode": "overwrite"}]
-                                                                                      }
+RAW_CATALOG_KEYS = {"type": TYPE,
+                    "file_format": "csv",
+                    "file_path": FILE_PATH + RAW_PATH,
+                    "load_args": [
+                        {"sep": "|"},
+                        {"header": True},
+                        {"inferSchema": True}
+                    ]}
+
+
+def get_catalog_keys(usr_path):
+    if usr_path:
+        usr_path = usr_path + "/"
+    return {"type": TYPE,
+            "file_format": "parquet",
+            "file_path": FILE_PATH + usr_path,
+            "save_args": [
+                {"mode": "overwrite"}]
+            }
+
+
+INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": RAW_CATALOG_KEYS,
+                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)
                    }
-INITIAL_CATALOG_REF = {
-    "{{cookiecutter.ref_data_abbr}}{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": {
-        "file_format": "parquet",
-        "file_path": FILE_PATH + REF_PATH,
-        "save_args": [
-            {"mode": "overwrite"}]
-    }
-}
+
+BASE_CATALOG = {"{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)}
 
 
 def should_create_additional_nodes(context):
@@ -95,42 +98,68 @@ def parse_pipeline_file(pipeline_file):
             connector_validate_node = "validation/validate_" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
 
             if connector not in pipelines:
-                print("Could not find the expected pipeline on pipelines.yml for connector {}".format(connector))
-            else:
-                pipelines[connector]["pipelines"] = [connector_stage, connector_validate]
-                print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node,
-                                                                                             connector_stage))
-
+                print(" - Could not find the expected pipeline on pipelines.yml for connector {}. Creating it!".format(
+                    connector))
+                pipelines[connector] = {"pipelines": []}
+            pipelines[connector]["pipelines"] = [connector_stage, connector_validate]
+            print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node,
+                                                                                         connector_stage))
             if connector_stage not in pipelines:
-                print("Could not find the expected pipeline on pipelines.yml for stage {}".format(connector_stage))
+                print(" - Could not find the expected pipeline on pipelines.yml for stage {}. Creating it!".format(
+                    connector_stage))
+                pipelines[connector_stage] = {"nodes": []}
+            nodes = pipelines[connector_stage]["nodes"]
+            if nodes:
+                print(" - Pipeline already has nodes: " + str(nodes))
+                pipelines[connector_stage]["nodes"].append(connector_stage_node)
             else:
-                nodes = pipelines[connector_stage]["nodes"]
-                if nodes:
-                    print("pipeline already has nodes: " + str(nodes))
-                    pipelines[connector_stage]["nodes"].append(connector_stage_node)
-                else:
-                    pipelines[connector_stage]["nodes"] = [connector_stage_node]
-                print(
-                    " - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
+                pipelines[connector_stage]["nodes"] = [connector_stage_node]
+            print(
+                " - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
 
             if connector_validate not in pipelines:
-                print("Could not find the expected validate pipeline on pipelines.yml for stage {}".format(
-                    connector_validate))
+                print(
+                    " - Could not find the expected validate pipeline on pipelines.yml for stage {}. Creating it!".format(
+                        connector_validate))
+                pipelines[connector_validate] = {"nodes": []}
+            nodes = pipelines[connector_validate]["nodes"]
+            if nodes:
+                print(" - Pipeline already has nodes: " + str(nodes))
+                pipelines[connector_validate]["nodes"].append(connector_validate_node)
             else:
-                nodes = pipelines[connector_validate]["nodes"]
-                if nodes:
-                    print("pipeline already has nodes: " + str(nodes))
-                    pipelines[connector_validate]["nodes"].append(connector_validate_node)
-                else:
-                    pipelines[connector_validate]["nodes"] = [connector_validate_node]
-                print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node,
-                                                                                             connector_validate))
+                pipelines[connector_validate]["nodes"] = [connector_validate_node]
+            print(" - Created node {} for validation pipeline {} on pipeline.yml".format(connector_validate_node,
+                                                                                         connector_validate))
 
             with open(pipeline_file, "w") as f:
                 yaml.dump(pipelines, f)
 
         except yaml.YAMLError as exc:
             print("Exception while trying to parse pipeline.yml")
+            print(exc)
+
+
+def parse_catalog_file(catalog_file, config_keys):
+    with open(catalog_file, 'r') as stream:
+        try:
+            catalogs = yaml.safe_load(stream)
+            print(" - Parsed catalog from catalog.yml!")
+
+            if not catalogs:
+                print("Error: Could not parse yml on catalog.yml. Skipping creation.")
+                return
+
+            ds = "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+
+            if ds not in catalogs:
+                print(" - Could not find the expected datasource on catalog.yml for ds {}. Creating it!".format(ds))
+                catalogs[ds] = config_keys
+
+            with open(catalog_file, "w") as f:
+                yaml.dump(catalogs, f)
+
+        except yaml.YAMLError as exc:
+            print("Exception while trying to parse catalog.yml")
             print(exc)
 
 
@@ -168,8 +197,11 @@ def should_add_to_catalog():
 
     create_or_copy_yml_file(catalog_file_path, catalog_bu, INITIAL_CATALOG,
                             "catalog_{{cookiecutter.connector_name}}.yml")
-    create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, INITIAL_CATALOG_REF,
+    create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, BASE_CATALOG,
                             "catalog_{{cookiecutter.connector_name}}_ref.yml")
+
+    parse_catalog_file(catalog_file_path, get_catalog_keys(USR_PATH))
+    parse_catalog_file(catalog_ref_file_path, get_catalog_keys(REF_PATH))
 
 
 should_add_to_pipeline()
