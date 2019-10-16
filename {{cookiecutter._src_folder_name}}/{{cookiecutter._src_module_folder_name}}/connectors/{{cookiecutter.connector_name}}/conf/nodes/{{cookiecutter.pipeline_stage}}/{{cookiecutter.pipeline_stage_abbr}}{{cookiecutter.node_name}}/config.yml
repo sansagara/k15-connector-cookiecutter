@@ -1,5 +1,17 @@
 function: connectors.{{cookiecutter.connector_name}}.src.{{cookiecutter.pipeline_stage}}.{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
+# TODO: Check the input is correct!
 inputs:
+{% if cookiecutter.pipeline_stage == 'intermediate' %}
   - {{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}
+{% endif %}
+{% if cookiecutter.pipeline_stage == 'primary' %}
+  - int_{{cookiecutter.node_name}}
+{% endif %}
+{% if cookiecutter.pipeline_stage == 'feature' %}
+  - prm_{{cookiecutter.node_name}}
+{% endif %}
+{% if cookiecutter.pipeline_stage == 'master' %}
+  - mst_{{cookiecutter.node_name}}
+{% endif %}
 outputs: {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}
 name: {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}

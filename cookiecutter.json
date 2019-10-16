@@ -1,27 +1,10 @@
 {
-  "_src_folder_name": "src",
-  "_src_module_folder_name": "ca4i_k15",
-  "connector_name": "orbit",
-  "pipeline_stage": {
-    "intermediate": {
-      "abbr": "int",
-      "prev": "raw"
-    },
-    "primary": {
-      "abbr": "prm",
-      "prev": "int"
-    },
-    "feature": {
-      "abbr": "ftr",
-      "prev": "prm"
-    },
-    "master": {
-      "abbr": "mst",
-      "prev": "ftr"
-    }
-  },
-  "pipeline_stage_abbr": "int_",
-  "raw_data_abbr": "raw_",
-  "ref_data_abbr": "ref_",
-  "node_name": "accounts"
+    "_src_folder_name": "src",
+    "_src_module_name": "ca4i_k15",
+    "connector_name": "orbit",
+    "pipeline_stage": ["intermediate", "primary", "feature", "master"],
+    "pipeline_stage_abbr": ["int_", "prm_", "ftr_", "mst_"],
+    "raw_data_abbr": "raw_",
+    "ref_data_abbr": "ref_",
+    "node_name": "accounts"
 }
