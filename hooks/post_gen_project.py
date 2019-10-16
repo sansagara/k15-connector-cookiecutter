@@ -7,9 +7,9 @@ import datetime
 CC_CONTEXT = {{cookiecutter}}
 DT = datetime.datetime.utcnow().isoformat()
 FILE_PATH = "s3a://$s3_bucket/$project_directory/"
-USR_PATH = "$s3_user/"
-RAW_PATH = "$s3_user_raw/"
-REF_PATH = "$s3_user_ref/"
+USR_PATH = "$s3_user/{{cookiecutter.connector_name}}/"
+RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+REF_PATH = "$s3_user_ref/{{cookiecutter.ref_data_abbr}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
@@ -21,7 +21,7 @@ INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": {
                                                                                 "file_format": "csv",
                                                                                 "file_path": FILE_PATH + RAW_PATH,
                                                                                 "load_args": [
-                                                                                    {"sep": "'|'"},
+                                                                                    {"sep": "|"},
                                                                                     {"header": True},
                                                                                     {"inferSchema": True}
                                                                                 ]},
