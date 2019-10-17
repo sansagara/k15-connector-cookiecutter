@@ -8,7 +8,7 @@ CC_CONTEXT = {{cookiecutter}}
 DT = datetime.datetime.utcnow().isoformat()
 FILE_PATH = "s3a://$s3_bucket/$project_directory/"
 USR_PATH = "$s3_user/0x-{{cookiecutter.pipeline_stage_abbr[:-1]}}/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
-RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.csv?"
 REF_PATH = "$s3_user_ref/0x-{{cookiecutter.pipeline_stage_abbr[:-1]}}/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
@@ -28,8 +28,6 @@ RAW_CATALOG_KEYS = {"type": TYPE,
 
 
 def get_catalog_keys(usr_path):
-    if usr_path:
-        usr_path = usr_path + "/"
     return {"type": TYPE,
             "file_format": "parquet",
             "filepath": FILE_PATH + usr_path,
