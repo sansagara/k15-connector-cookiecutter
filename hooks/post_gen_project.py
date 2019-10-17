@@ -143,7 +143,7 @@ def parse_pipeline_file(pipeline_file):
             print(exc)
 
 
-def parse_catalog_file(catalog_file, config_keys):
+def parse_catalog_file(catalog_file, config_keys, is_ref=False):
     with open(catalog_file, 'r') as stream:
         try:
             catalogs = yaml.safe_load(stream)
@@ -153,7 +153,9 @@ def parse_catalog_file(catalog_file, config_keys):
                 print("Error: Could not parse yml on catalog.yml. Skipping creation.")
                 return
 
-            ds = "{{cookiecutter.ref_data_abbr}}{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+            ds = "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+            if is_ref:
+                ds = "{{cookiecutter.ref_data_abbr}}" + ds
 
             if ds not in catalogs:
                 print(" - Could not find the expected datasource on catalog.yml for ds {}. Creating it!".format(ds))
@@ -204,8 +206,8 @@ def should_add_to_catalog():
     create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, REF_CATALOG,
                             "catalog_{{cookiecutter.connector_name}}_ref.yml")
 
-    parse_catalog_file(catalog_file_path, get_catalog_keys(USR_PATH))
-    parse_catalog_file(catalog_ref_file_path, get_catalog_keys(REF_PATH))
+    parse_catalog_file(catalog_file_path, get_catalog_keys(USR_PATH), is_ref=False)
+    parse_catalog_file(catalog_ref_file_path, get_catalog_keys(REF_PATH), is_ref=True)
 
 
 should_add_to_pipeline()
