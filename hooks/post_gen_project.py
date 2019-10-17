@@ -19,7 +19,7 @@ INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_st
 
 RAW_CATALOG_KEYS = {"type": TYPE,
                     "file_format": "csv",
-                    "file_path": FILE_PATH + RAW_PATH,
+                    "filepath": FILE_PATH + RAW_PATH,
                     "load_args": [
                         {"sep": "|"},
                         {"header": True},
@@ -32,7 +32,7 @@ def get_catalog_keys(usr_path):
         usr_path = usr_path + "/"
     return {"type": TYPE,
             "file_format": "parquet",
-            "file_path": FILE_PATH + usr_path,
+            "filepath": FILE_PATH + usr_path,
             "save_args": [
                 {"mode": "overwrite"}]
             }
