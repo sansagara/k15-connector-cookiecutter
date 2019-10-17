@@ -153,7 +153,7 @@ def parse_catalog_file(catalog_file, config_keys):
                 print("Error: Could not parse yml on catalog.yml. Skipping creation.")
                 return
 
-            ds = "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
+            ds = "{{cookiecutter.ref_data_abbr}}{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
 
             if ds not in catalogs:
                 print(" - Could not find the expected datasource on catalog.yml for ds {}. Creating it!".format(ds))
