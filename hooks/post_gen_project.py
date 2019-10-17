@@ -9,7 +9,7 @@ DT = datetime.datetime.utcnow().isoformat()
 FILE_PATH = "s3a://$s3_bucket/$project_directory/"
 USR_PATH = "$s3_user/{{cookiecutter.connector_name}}/"
 RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
-REF_PATH = "$s3_user_ref/{{cookiecutter.ref_data_abbr}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+REF_PATH = "$s3_user_ref/0x-{{cookiecutter.pipeline_stage_abbr[:-1]}}/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
@@ -38,11 +38,18 @@ def get_catalog_keys(usr_path):
             }
 
 
-INITIAL_CATALOG = {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": RAW_CATALOG_KEYS,
-                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)
-                   }
-
 BASE_CATALOG = {"{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)}
+REF_CATALOG = {
+    "{{cookiecutter.ref_data_abbr}}{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(
+        REF_PATH)}
+
+
+def get_initial_catalog(pipeline_stage):
+    if pipeline_stage == "intermediate":
+        return {"{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}": RAW_CATALOG_KEYS,
+                "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)}
+    else:
+        return {"{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}": get_catalog_keys(USR_PATH)}
 
 
 def should_create_additional_nodes(context):
@@ -195,9 +202,9 @@ def should_add_to_catalog():
                                   "{{cookiecutter.connector_name}}", "conf", "catalogs", "bu",
                                   DT, "catalog_{{cookiecutter.connector_name}}_ref.yml")
 
-    create_or_copy_yml_file(catalog_file_path, catalog_bu, INITIAL_CATALOG,
+    create_or_copy_yml_file(catalog_file_path, catalog_bu, get_initial_catalog("{{cookiecutter.pipeline_stage}}"),
                             "catalog_{{cookiecutter.connector_name}}.yml")
-    create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, BASE_CATALOG,
+    create_or_copy_yml_file(catalog_ref_file_path, catalog_ref_bu, REF_CATALOG,
                             "catalog_{{cookiecutter.connector_name}}_ref.yml")
 
     parse_catalog_file(catalog_file_path, get_catalog_keys(USR_PATH))
