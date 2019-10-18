@@ -101,13 +101,18 @@ def parse_pipeline_file(pipeline_file):
             connector_stage_node = "{{cookiecutter.pipeline_stage}}" + "/" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
             connector_validate_node = "validation/validate_" + "{{cookiecutter.pipeline_stage_abbr}}" + "{{cookiecutter.node_name}}"
 
+            # Master pipeline
             if connector not in pipelines:
                 print(" - Could not find the expected pipeline on pipelines.yml for connector {}. Creating it!".format(
                     connector))
                 pipelines[connector] = {"pipelines": []}
-            pipelines[connector]["pipelines"] = [connector_stage, connector_validate]
+            if connector_stage not in pipelines[connector]["pipelines"]:
+                pipelines[connector]["pipelines"].append(connector_stage)
+            if connector_validate not in pipelines[connector]["pipelines"]:
+                pipelines[connector]["pipelines"].append(connector_validate)
             print(" - Created master pipeline {} for pipeline {} on pipeline.yml".format(connector_stage_node,
                                                                                          connector_stage))
+            # Stage
             if connector_stage not in pipelines:
                 print(" - Could not find the expected pipeline on pipelines.yml for stage {}. Creating it!".format(
                     connector_stage))
@@ -121,6 +126,7 @@ def parse_pipeline_file(pipeline_file):
             print(
                 " - Created node {} for pipeline {} on pipeline.yml".format(connector_stage_node, connector_stage))
 
+            # Validate
             if connector_validate not in pipelines:
                 print(
                     " - Could not find the expected validate pipeline on pipelines.yml for stage {}. Creating it!".format(
