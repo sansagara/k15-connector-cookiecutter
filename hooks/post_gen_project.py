@@ -250,5 +250,5 @@ def open_in_pycharm():
 
 should_add_to_pipeline()
 should_add_to_catalog()
-should_create_additional_nodes(CC_CONTEXT)
 open_in_pycharm()
+should_create_additional_nodes(CC_CONTEXT)
