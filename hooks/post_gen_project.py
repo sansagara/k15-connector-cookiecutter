@@ -7,9 +7,22 @@ import datetime
 CC_CONTEXT = {{cookiecutter}}
 DT = datetime.datetime.utcnow().isoformat()
 FILE_PATH = "s3a://$s3_bucket/$project_directory/"
-USR_PATH = "$s3_user/0x-{{cookiecutter.pipeline_stage_abbr[:-1]}}/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+
+
+def get_stage_number(stage):
+    if stage == "intermediate":
+        return "02-int"
+    if stage == "primary":
+        return "03-prm"
+    if stage == "feature":
+        return "04-ftr"
+    if stage == "master":
+        return "05-mst"
+
+
+USR_PATH = "$s3_user/" + get_stage_number("{{cookiecutter.pipeline_stage_abbr}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.csv?"
-REF_PATH = "$s3_user_ref/0x-{{cookiecutter.pipeline_stage_abbr[:-1]}}/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+REF_PATH = "$s3_user_ref/" + get_stage_number("{{cookiecutter.pipeline_stage_abbr}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
@@ -58,7 +71,7 @@ def should_create_additional_nodes(context):
     if not new_node_name:
         print("Skipping new node creation!")
     else:
-        new_context = context = context.copy()
+        new_context = context.copy()
         new_context["node_name"] = new_node_name
         cookiecutter(
             'k15-connector-cookiecutter',
@@ -216,6 +229,23 @@ def should_add_to_catalog():
     parse_catalog_file(catalog_ref_file_path, get_catalog_keys(REF_PATH), is_ref=True)
 
 
+def open_in_pycharm():
+    import subprocess
+    subprocess.call(['/opt/pycharm/bin/pycharm.sh',
+                     os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                  "{{cookiecutter.connector_name}}", "conf", "nodes",
+                                  "{{cookiecutter.pipeline_stage}}",
+                                  "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}",
+                                  "config.yml")])
+
+    subprocess.call(['/opt/pycharm/bin/pycharm.sh',
+                     os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                  "{{cookiecutter.connector_name}}", "src",
+                                  "{{cookiecutter.pipeline_stage}}",
+                                  "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.py")])
+
+
 should_add_to_pipeline()
 should_add_to_catalog()
 should_create_additional_nodes(CC_CONTEXT)
+open_in_pycharm()
