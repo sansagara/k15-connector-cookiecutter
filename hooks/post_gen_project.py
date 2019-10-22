@@ -230,6 +230,7 @@ def should_add_to_catalog():
 
 
 def open_in_pycharm():
+    print(" - Opening new nodes!")
     import subprocess
     subprocess.call(['/opt/pycharm/bin/pycharm.sh',
                      os.path.join(os.getcwd(), "ca4i_k15", "connectors",
