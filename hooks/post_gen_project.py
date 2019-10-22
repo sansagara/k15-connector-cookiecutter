@@ -18,11 +18,13 @@ def get_stage_number(stage):
         return "04-ftr"
     if stage == "master":
         return "05-mst"
+    else:
+        return "0x-{{cookiecutter.pipeline_stage_abbr[-1]}}"
 
 
-USR_PATH = "$s3_user/" + get_stage_number("{{cookiecutter.pipeline_stage_abbr}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+USR_PATH = "$s3_user/" + get_stage_number("{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.csv?"
-REF_PATH = "$s3_user_ref/" + get_stage_number("{{cookiecutter.pipeline_stage_abbr}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+REF_PATH = "$s3_user_ref/" + get_stage_number("{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
