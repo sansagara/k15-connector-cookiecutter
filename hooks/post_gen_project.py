@@ -260,7 +260,7 @@ def add_manifest():
         print("Skipping manifest.yml creation!")
     else:
         connector_manifest_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
-                                                    "{{cookiecutter.connector_name}}")
+                                                    "{{cookiecutter.connector_name}}", "manifest.yml")
         create_or_copy_yml_file(connector_manifest_file_path, None, {"description": connector_description},
                                 "manifest.yml")
 
