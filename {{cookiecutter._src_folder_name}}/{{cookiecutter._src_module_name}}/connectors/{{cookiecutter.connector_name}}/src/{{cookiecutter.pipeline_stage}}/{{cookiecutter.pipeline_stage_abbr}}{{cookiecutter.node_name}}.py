@@ -12,5 +12,4 @@ def {{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}({% if cookiec
         DataFrame: Returns the {{cookiecutter.pipeline_stage}} data frame for {{cookiecutter.connector_name}} {{cookiecutter.node_name}}.
 
     """
-    # TODO: Write your node transformations here!
     return {% if cookiecutter.pipeline_stage == 'intermediate' %}{{cookiecutter.raw_data_abbr}}{% elif cookiecutter.pipeline_stage == 'primary' %}int_{% elif cookiecutter.pipeline_stage == 'feature' %}prm_{% elif cookiecutter.pipeline_stage == 'master' %}mst_{% endif %}{{cookiecutter.node_name}}
