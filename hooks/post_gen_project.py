@@ -251,6 +251,12 @@ def open_in_pycharm():
 
 
 def add_manifest():
+    connector_manifest_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                                "{{cookiecutter.connector_name}}", "manifest.yml")
+    if os.path.isfile(connector_manifest_file_path):
+        print("manifest.yml exists for connector")
+        return
+
     if not read_user_yes_no("Should i add a manifest.yml with a connector description?", default_value='yes'):
         print("Skipping manifest.yml creation!")
         return
@@ -259,8 +265,6 @@ def add_manifest():
     if not connector_description:
         print("Skipping manifest.yml creation!")
     else:
-        connector_manifest_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
-                                                    "{{cookiecutter.connector_name}}", "manifest.yml")
         create_or_copy_yml_file(connector_manifest_file_path, None, {"description": connector_description},
                                 "manifest.yml")
 
