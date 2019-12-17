@@ -22,9 +22,11 @@ def get_stage_number(stage):
         return "0x-{{cookiecutter.pipeline_stage_abbr[-1]}}"
 
 
-USR_PATH = "$s3_user/" + get_stage_number("{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+USR_PATH = "$s3_user/" + get_stage_number(
+    "{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.csv?"
-REF_PATH = "$s3_user_ref/" + get_stage_number("{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
+REF_PATH = "$s3_user_ref/" + get_stage_number(
+    "{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
 
 INITIAL_PIPELINES = {"{{cookiecutter.connector_name}}_{{cookiecutter.pipeline_stage}}": {"nodes": []},
@@ -88,7 +90,7 @@ def create_or_copy_yml_file(file, backup_file, initial_yml, name):
     import shutil
 
     # make a backup!
-    if os.path.isfile(file):
+    if os.path.isfile(file) and backup_file:
         os.makedirs(backup_file)
         shutil.copy(file, backup_file)
     else:
@@ -248,6 +250,22 @@ def open_in_pycharm():
                                   "{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.py")])
 
 
+def add_manifest():
+    if not read_user_yes_no("Should i add a manifest.yml with a connector description?", default_value='yes'):
+        print("Skipping manifest.yml creation!")
+        return
+
+    connector_description = read_user_variable("connector_description", None)
+    if not connector_description:
+        print("Skipping manifest.yml creation!")
+    else:
+        connector_manifest_file_path = os.path.join(os.getcwd(), "ca4i_k15", "connectors",
+                                                    "{{cookiecutter.connector_name}}")
+        create_or_copy_yml_file(connector_manifest_file_path, None, {"description": connector_description},
+                                "manifest.yml")
+
+
+add_manifest()
 should_add_to_pipeline()
 should_add_to_catalog()
 open_in_pycharm()
