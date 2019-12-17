@@ -24,7 +24,7 @@ def get_stage_number(stage):
 
 USR_PATH = "$s3_user/" + get_stage_number(
     "{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
-RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}.csv?"
+RAW_PATH = "$s3_user_raw/{{cookiecutter.connector_name}}/{{cookiecutter.raw_data_abbr}}{{cookiecutter.node_name}}.csv?"
 REF_PATH = "$s3_user_ref/" + get_stage_number(
     "{{cookiecutter.pipeline_stage}}") + "/{{cookiecutter.connector_name}}/{{cookiecutter.pipeline_stage_abbr}}{{cookiecutter.node_name}}"
 TYPE = "kedro.contrib.io.pyspark.SparkDataSet"
