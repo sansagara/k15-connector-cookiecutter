@@ -1,5 +1,6 @@
 from cookiecutter.main import cookiecutter
 from cookiecutter.prompt import read_user_yes_no, read_user_variable
+from collections import OrderedDict
 import os
 import yaml
 import datetime
